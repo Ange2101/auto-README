@@ -288,6 +288,8 @@ class RepoAnalyzer:
                         return "GPL"
                     if "BSD" in content:
                         return "BSD"
+                    if "All rights reserved" in content or "PROHIBITED ACTIVITIES" in content:
+                        return "Proprietary (All Rights Reserved)"
                     # if no known keyword found, fallback to the filename itself
                     return f.name
                 except Exception:

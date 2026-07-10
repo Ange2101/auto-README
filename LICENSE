@@ -1,0 +1,53 @@
+Custom Proprietary License for auto-README
+
+Copyright (c) 2024 Ange2101
+
+All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to use
+the Software for personal, educational, and non-commercial purposes only,
+subject to the following conditions:
+
+1. USAGE
+   You are permitted to download, install, and run the Software for
+   personal, academic, or internal evaluation purposes.
+
+2. DISTRIBUTION
+   You may distribute unmodified copies of the Software, provided that:
+   - all copyright notices remain intact;
+   - this license text is included in full;
+   - no fee is charged for the Software itself (distribution costs such as
+     hosting or bandwidth fees are acceptable).
+
+3. PROHIBITED ACTIVITIES
+   The following activities are STRICTLY FORBIDDEN without prior written
+   permission from the copyright holder:
+   a) MODIFICATION — You may NOT alter, adapt, translate, reverse-engineer,
+      decompile, disassemble, or create derivative works based on the Software.
+   b) COMMERCIAL USE — You may NOT sell, rent, lease, sublicense, or use the
+      Software for any commercial purpose, including but not limited to:
+      - selling the Software as a product or service;
+      - using the Software as part of a paid offering;
+      - monetizing the Software through advertising, subscriptions, or
+        any other revenue model.
+   c) INCORPORATION — You may NOT incorporate the Software, in whole or in
+      part, into another product, project, or codebase.
+
+4. NO WARRANTY
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+
+5. TERMINATION
+   This license automatically terminates if you violate any of the terms
+   stated above. Upon termination, you must immediately cease all use and
+   destroy all copies of the Software in your possession.
+
+6. CONTACT
+   For licensing inquiries, commercial licenses, or permission requests,
+   please contact the copyright holder.
