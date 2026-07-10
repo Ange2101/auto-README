@@ -203,6 +203,13 @@ class RepoAnalyzer:
         # Python pytest ecosystem leaves well-known marker files
         if "pytest.ini" in names or "conftest.py" in names:
             return "pytest"
+        # also detect pytest if there is a conftest.py nested inside tests/
+        if (self.repo_path / "tests" / "conftest.py").exists():
+            return "pytest"
+        # fallback: if it is a Python project with a tests directory, assume pytest
+        python_manifests = {"requirements.txt", "pyproject.toml", "setup.py", "setup.cfg"}
+        if any(m in names for m in python_manifests) and (self.repo_path / "tests").is_dir():
+            return "pytest"
         # JavaScript / TypeScript
         if "jest.config.js" in names or "jest.config.ts" in names:
             return "jest"

@@ -3,7 +3,10 @@
 
 > CLI tool that auto-generates README.md from repository analysis.
 
+**Repository:** https://github.com/Ange2101/auto-README.git
+
 **Primary Language:** Python
+**Default Branch:** `main`
 
 ---
 
@@ -44,6 +47,7 @@ auto-README/
 │   └── generator.py
 ├── tests/
 │   └── pyproject.toml
+├── .gitignore
 ├── pyproject.toml
 └── README.md
 ```
@@ -54,9 +58,9 @@ auto-README/
 
 | Language | Percentage |
 |----------|------------|
-| Python | 83.3% |
-| Markdown | 10.4% |
-| TOML | 6.3% |
+| Python | 83.0% |
+| Markdown | 10.8% |
+| TOML | 6.2% |
 
 ---
 
@@ -72,10 +76,12 @@ pip install -r requirements.txt
 
 ## Tests
 
+Framework: **pytest**
+
 Run the test suite with:
 
 ```bash
-# run your test command here
+pytest
 ```
 
 ---
