@@ -13,10 +13,11 @@
 ## Table of Contents
 
 - [Overview](#overview)
+- [Features](#features)
 - [Project Structure](#project-structure)
 - [Languages](#languages)
-- [Installation](#installation)
-- [Tests](#tests)
+- [Getting Started](#getting-started)
+- [Development & Tests](#development--tests)
 - [License](#license)
 
 ---
@@ -24,6 +25,22 @@
 ## Overview
 
 CLI tool that auto-generates README.md from repository analysis.
+
+Clone the repository:
+
+```bash
+git clone https://github.com/Ange2101/auto-README.git
+cd auto-README
+```
+
+---
+
+## Features
+
+- Built primarily with Python
+- Test suite included (pytest)
+- Licensed under MIT
+- Package manager: pip
 
 ---
 
@@ -60,27 +77,35 @@ auto-README/
 
 | Language | Percentage |
 |----------|------------|
-| Python | 74.0% |
-| Markdown | 21.1% |
-| TOML | 4.9% |
+| Python | 84.6% |
+| Markdown | 10.2% |
+| TOML | 5.2% |
 
 ---
 
-## Installation
+## Getting Started
+
+### Prerequisites
+
+Make sure you have the following installed:
+
+- Python 3.9+
+
+### Installation
+
+Install dependencies using the detected package manager (`pip`):
 
 ```bash
 pip install -r requirements.txt
 ```
 
-*Package manager detected:* `pip`
-
 ---
 
-## Tests
+## Development & Tests
 
-Framework: **pytest**
+This project uses **pytest** for testing.
 
-Run the test suite with:
+Run the test suite:
 
 ```bash
 pytest
