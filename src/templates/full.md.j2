@@ -18,6 +18,9 @@
 {% if default_branch %}
 **Default Branch:** `{{ default_branch }}`
 {% endif %}
+{% if html_title and not description %}
+**Title:** {{ html_title }}
+{% endif %}
 
 ---
 
@@ -25,12 +28,14 @@
 
 - [Overview](#overview)
 {% if tree %}- [Project Structure](#project-structure)
+{% endif %}{% if is_website %}- [Demo](#demo)
 {% endif %}{% if languages %}- [Languages](#languages)
 {% endif %}{% if install_command %}- [Installation](#installation)
 {% endif %}{% if entry_points %}- [Usage](#usage)
 {% endif %}{% if has_tests %}- [Tests](#tests)
 {% endif %}{% if has_docker %}- [Docker](#docker)
 {% endif %}{% if has_ci %}- [CI / CD](#ci--cd)
+{% endif %}{% if has_screenshots_dir %}- [Screenshots](#screenshots)
 {% endif %}{% if license %}- [License](#license)
 {% endif %}
 
@@ -39,6 +44,7 @@
 ## Overview
 
 {% if description %}{{ description }}
+{% elif html_title %}{{ html_title }}
 {% else %}This project is built primarily with **{{ primary_language }}**.
 {% endif %}
 
@@ -50,6 +56,28 @@
 ```
 {{ tree }}
 ```
+
+---
+
+{% endif %}
+{% if is_website %}
+## Demo
+
+{% if entry_points %}
+Open the site locally:
+
+```bash
+# open in browser
+open {{ entry_points[0] }}
+```
+
+{% if remote_url %}
+Or visit the live version once deployed.
+{% endif %}
+
+{% else %}
+Open `index.html` in a browser to view the project.
+{% endif %}
 
 ---
 
@@ -137,6 +165,17 @@ Platform: **{{ ci_platform }}**
 {% endif %}
 
 CI configuration is present in the repository.
+
+---
+
+{% endif %}
+{% if has_screenshots_dir %}
+## Screenshots
+
+Preview images are available in the repository.
+
+<!-- Replace the paths below with actual screenshots -->
+<!-- ![Screenshot](screenshots/preview.png) -->
 
 ---
 

@@ -32,9 +32,12 @@ class RepoAnalyzer:
         """
         Run all analysis methods and return aggregated metadata dictionary.
         """
+        # extract HTML metadata early so _get_description() can use it as fallback
+        html_meta = self._extract_html_meta()
         return {
             "repo_name": self.repo_path.name,
-            "description": self._get_description(),
+            "description": self._get_description(html_meta),
+            "html_title": html_meta.get("title"),
             "primary_language": self._detect_primary_language(),
             "languages": self._detect_languages(),
             "tree": self._get_tree(),
@@ -49,6 +52,8 @@ class RepoAnalyzer:
             "package_manager": self._detect_package_manager(),
             "install_command": self._get_install_command(),
             "entry_points": self._find_entry_points(),
+            "is_website": self._is_website(),
+            "has_screenshots_dir": self._has_screenshots_dir(),
         }
 
     def _detect_languages(self) -> Dict[str, int]:
@@ -361,7 +366,7 @@ class RepoAnalyzer:
 
         return commands.get(pm)
 
-    def _get_description(self) -> Optional[str]:
+    def _get_description(self, html_meta: Dict[str, str] = None) -> Optional[str]:
         """
         Extract a project description from common manifest files or existing README.
         Tries multiple sources in order of reliability.
@@ -415,7 +420,67 @@ class RepoAnalyzer:
             except Exception:
                 pass
 
+        # source 5: HTML meta description (for static websites / portfolios)
+        if html_meta and html_meta.get("description"):
+            return html_meta["description"]
+
         return None
+
+    def _extract_html_meta(self) -> Dict[str, str]:
+        """
+        Parse index.html (if present) to extract <title> and <meta name="description">.
+        Used to auto-fill description for static websites and portfolios.
+        """
+        index = self.repo_path / "index.html"
+        if not index.exists():
+            return {}
+        try:
+            content = index.read_text(encoding="utf-8", errors="ignore")
+            result: Dict[str, str] = {}
+            # extract <title> content (non-greedy, case-insensitive)
+            title_match = re.search(r"<title>(.*?)</title>", content, re.IGNORECASE | re.DOTALL)
+            if title_match:
+                result["title"] = re.sub(r"\s+", " ", title_match.group(1).strip())
+            # extract <meta name="description" content="...">
+            meta_match = re.search(
+                r'<meta[^>]*?name=["\']description["\'][^>]*?content=["\'](.*?)["\']',
+                content,
+                re.IGNORECASE | re.DOTALL,
+            )
+            if meta_match:
+                result["description"] = meta_match.group(1).strip()
+            else:
+                # try reversed attribute order: content="..." name="description"
+                meta_match = re.search(
+                    r'<meta[^>]*?content=["\'](.*?)["\'][^>]*?name=["\']description["\']',
+                    content,
+                    re.IGNORECASE | re.DOTALL,
+                )
+                if meta_match:
+                    result["description"] = meta_match.group(1).strip()
+            return result
+        except Exception:
+            return {}
+
+    def _is_website(self) -> bool:
+        """
+        Return True if the project looks like a static website (has index.html).
+        """
+        return (self.repo_path / "index.html").exists()
+
+    def _has_screenshots_dir(self) -> bool:
+        """
+        Detect common directories that might contain screenshots or preview images.
+        """
+        candidates = ["images", "img", "assets", "screenshots", "demo", "preview"]
+        for c in candidates:
+            d = self.repo_path / c
+            if d.is_dir():
+                # verify the directory actually contains image-like files
+                for f in d.iterdir():
+                    if f.is_file() and f.suffix.lower() in {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"}:
+                        return True
+        return False
 
     def _find_entry_points(self) -> Optional[List[str]]:
         """
@@ -442,6 +507,10 @@ class RepoAnalyzer:
             except Exception:
                 # if package.json is malformed, just ignore it
                 pass
+
+        # static website entry point
+        if (self.repo_path / "index.html").exists():
+            entries.append("index.html")
 
         # return None instead of an empty list so templates can easily check with 'if entry_points'
         return entries if entries else None

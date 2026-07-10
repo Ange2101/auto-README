@@ -7,6 +7,8 @@
 
 {% if description %}{{ description }}
 
+{% elif html_title %}{{ html_title }}
+
 {% endif %}{% if primary_language %}
 **Language:** {{ primary_language }}
 {% endif %}{% if default_branch %}
@@ -21,6 +23,12 @@
 ```
 {{ tree }}
 ```
+
+{% endif %}
+{% if is_website %}
+## Demo
+
+Open `index.html` in your browser to view the project.
 
 {% endif %}
 {% if install_command %}
