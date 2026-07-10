@@ -1,0 +1,148 @@
+{# Template: full.md.j2 ========================================================
+   Generates a comprehensive README with all sections discovered by RepoAnalyzer.
+   Each block is wrapped in a conditional so missing metadata simply disappears.
+   ========================================================================== #}
+
+# {{ repo_name }}
+
+{% if description %}> {{ description }}
+
+{% endif %}
+{% if remote_url %}
+**Repository:** {{ remote_url }}
+
+{% endif %}
+{% if primary_language %}
+**Primary Language:** {{ primary_language }}
+{% endif %}
+{% if default_branch %}
+**Default Branch:** `{{ default_branch }}`
+{% endif %}
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+{% if tree %}- [Project Structure](#project-structure)
+{% endif %}{% if languages %}- [Languages](#languages)
+{% endif %}{% if install_command %}- [Installation](#installation)
+{% endif %}{% if entry_points %}- [Usage](#usage)
+{% endif %}{% if has_tests %}- [Tests](#tests)
+{% endif %}{% if has_docker %}- [Docker](#docker)
+{% endif %}{% if has_ci %}- [CI / CD](#ci--cd)
+{% endif %}{% if license %}- [License](#license)
+{% endif %}
+
+---
+
+## Overview
+
+{% if description %}{{ description }}
+{% else %}This project is built primarily with **{{ primary_language }}**.
+{% endif %}
+
+---
+
+{% if tree %}
+## Project Structure
+
+```
+{{ tree }}
+```
+
+---
+
+{% endif %}
+{% if languages %}
+## Languages
+
+| Language | Percentage |
+|----------|------------|
+{% for lang, pct in languages.items() %}
+| {{ lang }} | {{ pct }}% |
+{% endfor %}
+
+---
+
+{% endif %}
+{% if install_command %}
+## Installation
+
+```bash
+{{ install_command }}
+```
+
+{% if package_manager %}
+*Package manager detected:* `{{ package_manager }}`
+{% endif %}
+
+---
+
+{% endif %}
+{% if entry_points %}
+## Usage
+
+{% for ep in entry_points %}
+- `{{ ep }}`
+{% endfor %}
+
+---
+
+{% endif %}
+{% if has_tests %}
+## Tests
+
+{% if test_framework %}
+Framework: **{{ test_framework }}**
+
+{% endif %}Run the test suite with:
+
+```bash
+{% if test_framework == "pytest" %}pytest
+{% elif test_framework == "jest" %}npm test
+{% elif test_framework == "vitest" %}npx vitest
+{% elif test_framework == "JUnit (Maven)" %}mvn test
+{% elif test_framework == "JUnit (Gradle)" %}gradle test
+{% elif test_framework == "go test" %}go test ./...
+{% elif test_framework == "cargo test" %}cargo test
+{% else %}# run your test command here
+{% endif %}
+```
+
+---
+
+{% endif %}
+{% if has_docker %}
+## Docker
+
+This project includes Docker support.
+
+```bash
+# Build the image
+docker build -t my-app .
+
+# Or use docker-compose
+docker-compose up
+```
+
+---
+
+{% endif %}
+{% if has_ci %}
+## CI / CD
+
+{% if ci_platform %}
+Platform: **{{ ci_platform }}**
+{% endif %}
+
+CI configuration is present in the repository.
+
+---
+
+{% endif %}
+{% if license %}
+## License
+
+This project is licensed under the **{{ license }}** License.
+{% endif %}

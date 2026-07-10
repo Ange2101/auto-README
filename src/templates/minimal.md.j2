@@ -1,0 +1,38 @@
+{# Template: minimal.md.j2 =======================================================
+   Generates a short README with only the most important sections.
+   Ideal for small projects or when you want a quick overview.
+   ========================================================================== #}
+
+# {{ repo_name }}
+
+{% if description %}{{ description }}
+
+{% endif %}{% if primary_language %}
+**Language:** {{ primary_language }}
+{% endif %}{% if default_branch %}
+**Branch:** `{{ default_branch }}`
+{% endif %}
+
+---
+
+{% if tree %}
+## Structure
+
+```
+{{ tree }}
+```
+
+{% endif %}
+{% if install_command %}
+## Install
+
+```bash
+{{ install_command }}
+```
+
+{% endif %}
+{% if license %}
+## License
+
+{{ license }}
+{% endif %}

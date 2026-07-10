@@ -1,0 +1,23 @@
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# IDEs
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
