@@ -1,6 +1,5 @@
 {# Template: full.md.j2 ========================================================
    Generates a comprehensive README with all sections discovered by RepoAnalyzer.
-   Each block is wrapped in a conditional so missing metadata simply disappears.
    ========================================================================== #}
 
 # {{ repo_name }}
@@ -27,12 +26,13 @@
 ## Table of Contents
 
 - [Overview](#overview)
-{% if tree %}- [Project Structure](#project-structure)
+{% if features %}- [Features](#features)
+{% endif %}{% if tree %}- [Project Structure](#project-structure)
 {% endif %}{% if is_website %}- [Demo](#demo)
 {% endif %}{% if languages %}- [Languages](#languages)
-{% endif %}{% if install_command %}- [Installation](#installation)
+{% endif %}{% if prerequisites or install_command %}- [Getting Started](#getting-started)
 {% endif %}{% if entry_points %}- [Usage](#usage)
-{% endif %}{% if has_tests %}- [Tests](#tests)
+{% endif %}{% if has_tests %}- [Development & Tests](#development--tests)
 {% endif %}{% if has_docker %}- [Docker](#docker)
 {% endif %}{% if has_ci %}- [CI / CD](#ci--cd)
 {% endif %}{% if has_screenshots_dir %}- [Screenshots](#screenshots)
@@ -48,8 +48,27 @@
 {% else %}This project is built primarily with **{{ primary_language }}**.
 {% endif %}
 
+{% if remote_url %}
+Clone the repository:
+
+```bash
+git clone {{ remote_url }}
+cd {{ repo_name }}
+```
+{% endif %}
+
 ---
 
+{% if features %}
+## Features
+
+{% for f in features %}
+- {{ f }}
+{% endfor %}
+
+---
+
+{% endif %}
 {% if tree %}
 ## Project Structure
 
@@ -94,15 +113,31 @@ Open `index.html` in a browser to view the project.
 ---
 
 {% endif %}
+{% if prerequisites or install_command %}
+## Getting Started
+
+### Prerequisites
+
+{% if prerequisites %}
+Make sure you have the following installed:
+
+{% for p in prerequisites %}
+- {{ p }}
+{% endfor %}
+{% else %}
+No specific prerequisites were detected for this project.
+{% endif %}
+
+### Installation
+
 {% if install_command %}
-## Installation
+Install dependencies using the detected package manager (`{{ package_manager }}`):
 
 ```bash
 {{ install_command }}
 ```
-
-{% if package_manager %}
-*Package manager detected:* `{{ package_manager }}`
+{% else %}
+No install command was detected. Check the project documentation for setup instructions.
 {% endif %}
 
 ---
@@ -111,20 +146,38 @@ Open `index.html` in a browser to view the project.
 {% if entry_points %}
 ## Usage
 
+{% if is_website %}
+Open the entry point in your browser:
+
+```bash
+open {{ entry_points[0] }}
+```
+
+{% else %}
+Run the project from its entry point:
+
 {% for ep in entry_points %}
-- `{{ ep }}`
+```bash
+{{ ep }}
+```
 {% endfor %}
+
+{% endif %}
+{% if remote_url %}
+For full details, refer to the repository: {{ remote_url }}
+{% endif %}
 
 ---
 
 {% endif %}
 {% if has_tests %}
-## Tests
+## Development & Tests
 
 {% if test_framework %}
-Framework: **{{ test_framework }}**
+This project uses **{{ test_framework }}** for testing.
+{% endif %}
 
-{% endif %}Run the test suite with:
+Run the test suite:
 
 ```bash
 {% if test_framework == "pytest" %}pytest
@@ -164,7 +217,7 @@ docker-compose up
 Platform: **{{ ci_platform }}**
 {% endif %}
 
-CI configuration is present in the repository.
+Automated builds and tests are configured for this repository.
 
 ---
 

@@ -54,6 +54,8 @@ class RepoAnalyzer:
             "entry_points": self._find_entry_points(),
             "is_website": self._is_website(),
             "has_screenshots_dir": self._has_screenshots_dir(),
+            "features": self._get_features(),
+            "prerequisites": self._get_prerequisites(),
         }
 
     def _detect_languages(self) -> Dict[str, int]:
@@ -516,3 +518,66 @@ class RepoAnalyzer:
 
         # return None instead of an empty list so templates can easily check with 'if entry_points'
         return entries if entries else None
+
+    def _get_features(self) -> List[str]:
+        """
+        Build a human-readable feature list from everything detected in the repo.
+        """
+        feats: List[str] = []
+        langs = self._detect_languages()
+        if langs:
+            top = max(langs, key=langs.get)
+            feats.append(f"Built primarily with {top}")
+        if self._has_tests():
+            tf = self._detect_test_framework()
+            label = f" ({tf})" if tf else ""
+            feats.append(f"Test suite included{label}")
+        if self._has_docker():
+            feats.append("Docker support")
+        if self._has_ci():
+            cp = self._detect_ci_platform()
+            label = f" via {cp}" if cp else ""
+            feats.append(f"CI/CD configured{label}")
+        if self._is_website():
+            feats.append("Static website / portfolio")
+        if self._has_screenshots_dir():
+            feats.append("Preview screenshots available")
+        ep = self._find_entry_points()
+        if ep:
+            feats.append(f"Entry point{'s' if len(ep) > 1 else ''}: {', '.join(ep)}")
+        lic = self._detect_license()
+        if lic:
+            feats.append(f"Licensed under {lic}")
+        pm = self._detect_package_manager()
+        if pm:
+            feats.append(f"Package manager: {pm}")
+        return feats
+
+    def _get_prerequisites(self) -> Optional[List[str]]:
+        """
+        Guess runtime prerequisites from the detected package manager / language.
+        """
+        pm = self._detect_package_manager()
+        if not pm:
+            if self._is_website():
+                return ["Any modern web browser"]
+            return None
+        prereqs: List[str] = []
+        if pm in ("pip",):
+            prereqs.append("Python 3.9+")
+            if (self.repo_path / "requirements.txt").exists():
+                prereqs.append("pip")
+        elif pm == "npm/yarn/pnpm":
+            prereqs.append("Node.js 18+")
+            prereqs.append("npm (or yarn / pnpm)")
+        elif pm == "cargo":
+            prereqs.append("Rust toolchain (cargo)")
+        elif pm == "go mod":
+            prereqs.append("Go 1.21+")
+        elif pm in ("Maven", "Gradle"):
+            prereqs.append("JDK 17+")
+            prereqs.append(pm.lower())
+        elif pm == "bundler":
+            prereqs.append("Ruby 3.0+")
+            prereqs.append("Bundler")
+        return prereqs if prereqs else None

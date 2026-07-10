@@ -1,6 +1,5 @@
 {# Template: minimal.md.j2 =======================================================
-   Generates a short README with only the most important sections.
-   Ideal for small projects or when you want a quick overview.
+   Generates a short README with the most important sections.
    ========================================================================== #}
 
 # {{ repo_name }}
@@ -17,6 +16,14 @@
 
 ---
 
+{% if features %}
+## Features
+
+{% for f in features %}
+- {{ f }}
+{% endfor %}
+
+{% endif %}
 {% if tree %}
 ## Structure
 
