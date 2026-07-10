@@ -38,6 +38,24 @@
 Open `index.html` in your browser to view the project.
 
 {% endif %}
+{% if usage_guide %}
+## Usage Guide
+
+{% for cmd in usage_guide.commands %}
+```bash
+{{ cmd.command }}
+```
+{{ cmd.description }}
+{% endfor %}
+
+{% if usage_guide.options %}
+Options:
+{% for opt in usage_guide.options %}
+- `{{ opt.flag }}` — {{ opt.description }}{% if opt.default %} (default: `{{ opt.default }}`){% endif %}
+{% endfor %}
+
+{% endif %}
+{% endif %}
 {% if install_command %}
 ## Install
 

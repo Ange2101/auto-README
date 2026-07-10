@@ -31,6 +31,7 @@
 {% endif %}{% if is_website %}- [Demo](#demo)
 {% endif %}{% if languages %}- [Languages](#languages)
 {% endif %}{% if prerequisites or install_command %}- [Getting Started](#getting-started)
+{% endif %}{% if usage_guide %}- [Usage Guide](#usage-guide)
 {% endif %}{% if entry_points %}- [Usage](#usage)
 {% endif %}{% if has_tests %}- [Development & Tests](#development--tests)
 {% endif %}{% if has_docker %}- [Docker](#docker)
@@ -138,6 +139,46 @@ Install dependencies using the detected package manager (`{{ package_manager }}`
 ```
 {% else %}
 No install command was detected. Check the project documentation for setup instructions.
+{% endif %}
+
+---
+
+{% endif %}
+{% if usage_guide %}
+## Usage Guide
+
+{{ usage_guide.description }}
+
+{% if usage_guide.commands %}
+### Commands
+
+| Command | Description |
+|---------|-------------|
+{% for cmd in usage_guide.commands %}
+| `{{ cmd.command }}` | {{ cmd.description }} |
+{% endfor %}
+
+{% endif %}
+{% if usage_guide.options %}
+### CLI Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+{% for opt in usage_guide.options %}
+| `{{ opt.flag }}` | {{ opt.default or "—" }} | {{ opt.description }} |
+{% endfor %}
+
+{% endif %}
+{% if usage_guide.examples %}
+### Examples
+
+{% for ex in usage_guide.examples %}
+```bash
+{{ ex.command }}
+```
+{{ ex.description }}
+
+{% endfor %}
 {% endif %}
 
 ---

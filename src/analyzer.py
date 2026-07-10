@@ -56,6 +56,7 @@ class RepoAnalyzer:
             "has_screenshots_dir": self._has_screenshots_dir(),
             "features": self._get_features(),
             "prerequisites": self._get_prerequisites(),
+            "usage_guide": self._get_usage_guide(),
         }
 
     def _detect_languages(self) -> Dict[str, int]:
@@ -581,3 +582,142 @@ class RepoAnalyzer:
             prereqs.append("Ruby 3.0+")
             prereqs.append("Bundler")
         return prereqs if prereqs else None
+
+    def _get_usage_guide(self) -> Optional[Dict[str, Any]]:
+        """
+        Auto-detect CLI usage information from pyproject.toml scripts and src/cli.py.
+        Returns structured data for generating a comprehensive Usage Guide in the README.
+        """
+        # Step 1: discover the CLI command name from pyproject.toml [project.scripts]
+        pp = self.repo_path / "pyproject.toml"
+        command_name: Optional[str] = None
+        module_path: Optional[str] = None
+        if pp.exists():
+            try:
+                content = pp.read_text(encoding="utf-8", errors="ignore")
+                # find [project.scripts] section
+                scripts_match = re.search(
+                    r'\[project\.scripts\](.*?)(?=\[|\Z)',
+                    content,
+                    re.DOTALL,
+                )
+                if scripts_match:
+                    scripts_block = scripts_match.group(1)
+                    # extract first entry: command-name = "module.path:function"
+                    line_match = re.search(
+                        r'^([A-Za-z0-9_-]+)\s*=\s*"([^"]+)"',
+                        scripts_block,
+                        re.MULTILINE,
+                    )
+                    if line_match:
+                        command_name = line_match.group(1)
+                        module_path = line_match.group(2)
+            except Exception:
+                pass
+
+        if not command_name:
+            return None
+
+        # Step 2: discover the CLI source file from the module path
+        # module_path looks like "src.cli:main" -> file src/cli.py
+        cli_file: Optional[Path] = None
+        if module_path:
+            file_part = module_path.split(":")[0].replace(".", "/") + ".py"
+            candidate = self.repo_path / file_part
+            if candidate.exists():
+                cli_file = candidate
+
+        # Step 3: parse argparse arguments from the CLI file
+        commands: List[Dict[str, str]] = []
+        options: List[Dict[str, str]] = []
+        examples: List[Dict[str, str]] = []
+
+        if cli_file and cli_file.exists():
+            try:
+                cli_text = cli_file.read_text(encoding="utf-8", errors="ignore")
+
+                # Extract add_argument calls
+                # Pattern: parser.add_argument("-x", "--long", default="val", help="text")
+                arg_pattern = re.compile(
+                    r'add_argument\(\s*'
+                    r'((?:"[^"]*"\s*,?\s*)+)'  # flags like "-o", "--output"
+                    r'(.*?)'  # rest of arguments
+                    r'\)',
+                    re.DOTALL,
+                )
+
+                for match in arg_pattern.finditer(cli_text):
+                    flags_str = match.group(1)
+                    rest = match.group(2)
+
+                    # Extract flags
+                    flags = re.findall(r'"([^"]*)"', flags_str)
+                    if not flags:
+                        continue
+
+                    # Determine if positional (no dash) or optional
+                    is_positional = not any(f.startswith("-") for f in flags)
+
+                    # Extract help text
+                    help_match = re.search(r'help\s*=\s*"([^"]*)"', rest)
+                    help_text = help_match.group(1) if help_match else ""
+
+                    # Extract default
+                    default_match = re.search(r'default\s*=\s*([^,\)]+)', rest)
+                    default_val = ""
+                    if default_match:
+                        default_raw = default_match.group(1).strip()
+                        # strip quotes if string literal
+                        default_val = default_raw.strip('"').strip("'")
+                        if default_val in ("None", ""):
+                            default_val = ""
+
+                    if is_positional:
+                        # positional argument like repo_path
+                        commands.append({
+                            "command": f"{command_name} [{' '.join(flags)}]",
+                            "description": help_text,
+                        })
+                    else:
+                        # optional argument
+                        flag_display = " / ".join(flags)
+                        options.append({
+                            "flag": flag_display,
+                            "default": default_val,
+                            "description": help_text,
+                        })
+            except Exception:
+                pass
+
+        # If no commands were extracted from argparse, add a generic one
+        if not commands:
+            commands.append({
+                "command": command_name,
+                "description": "Run the CLI tool",
+            })
+
+        # Build sensible examples based on detected options
+        examples.append({
+            "command": f"{command_name} .",
+            "description": "Run with default settings in the current directory",
+        })
+        # Check if --template option exists
+        if any("template" in opt["flag"] for opt in options):
+            examples.append({
+                "command": f"{command_name} . --template minimal.md.j2",
+                "description": "Use a different template (minimal instead of full)",
+            })
+        # Check if --output option exists
+        if any("output" in opt["flag"] for opt in options):
+            examples.append({
+                "command": f"{command_name} /path/to/project -o /path/to/project/README.md",
+                "description": "Analyze another project and write to a custom path",
+            })
+
+        return {
+            "command_name": command_name,
+            "description": f"{command_name} is a command-line tool. See below for detailed usage.",
+            "commands": commands,
+            "options": options,
+            "examples": examples,
+        }
