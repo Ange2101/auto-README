@@ -17,6 +17,7 @@
 - [Project Structure](#project-structure)
 - [Languages](#languages)
 - [Getting Started](#getting-started)
+- [Usage Guide](#usage-guide)
 - [Development & Tests](#development--tests)
 - [License](#license)
 
@@ -77,9 +78,9 @@ auto-README/
 
 | Language | Percentage |
 |----------|------------|
-| Python | 84.6% |
-| Markdown | 10.2% |
-| TOML | 5.2% |
+| Python | 81.7% |
+| Markdown | 14.1% |
+| TOML | 4.2% |
 
 ---
 
@@ -98,6 +99,44 @@ Install dependencies using the detected package manager (`pip`):
 ```bash
 pip install -r requirements.txt
 ```
+
+---
+
+## Usage Guide
+
+auto-readme is a command-line tool. See below for detailed usage.
+
+### Commands
+
+| Command | Description |
+|---------|-------------|
+| `auto-readme [repo_path]` |  |
+
+### CLI Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `-o / --output` | README.md |  |
+| `-t / --template` | full.md.j2 |  |
+| `--template-dir` | — |  |
+
+### Examples
+
+```bash
+auto-readme .
+```
+Run with default settings in the current directory
+
+```bash
+auto-readme . --template minimal.md.j2
+```
+Use a different template (minimal instead of full)
+
+```bash
+auto-readme /path/to/project -o /path/to/project/README.md
+```
+Analyze another project and write to a custom path
+
 
 ---
 
